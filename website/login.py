@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template,url_for,session,redirect, request, flash
-from flask_login import LoginManager, UserMixin, login_user,login_required,logout_user,current_user
-from .root import show_users,conn_db,close_db
-from . import create_app, login_manager
+from flask_login import  UserMixin, login_user,login_required,logout_user,current_user
+from .root import conn_db
+from . import login_manager
 login_blueprint = Blueprint('login_blueprint',__name__)
 
 
@@ -22,9 +22,6 @@ class User(UserMixin):
          return True
     def get_id(self):
          return self.id
-# with create_app().app_context():
-#         # This context ensures that you can use Flask's session and other context-dependent features.
-#         users = show_users()
 
 
 @login_manager.user_loader
@@ -46,7 +43,7 @@ def load_user(user_id):
 @login_blueprint.route('/',methods = ['GET','POST'])
 def login_logic():
     if current_user.is_authenticated:
-         return redirect(url_for('root.profile'))
+         return redirect(url_for('root.tweets'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -58,8 +55,9 @@ def login_logic():
             Us = load_user(user[0])
             if email == Us.email and password == Us.password:
                 login_user(Us)
-                return redirect(url_for('root.profile'))
+                return redirect(url_for('root.tweets'))
             else:
                 flash('Login Failed check your username and password','danger')
     return render_template('login.html')
  
+

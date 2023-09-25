@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="tweets-wrapper">
+        {%for tweet in tweets%}
+        <div class="tweet-card">
+          <h2>{{tweet.title}}</h2>
+          <p>{{tweet.content}}</p>
+          {%if tweet.image_path%}
+          <img src="{{tweet.image_path}}" alt="" width="400px" />
+          {%endif %}
+        </div>
+        {%endfor %}
+      </div>
+    </div>
+  </body>
+</html>

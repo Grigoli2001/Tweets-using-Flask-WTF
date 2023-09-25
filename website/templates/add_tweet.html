@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.content.label(class="form-label") }} {{
+        form.content(class="form-control") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.image.label(class="form-label") }} {{
+        form.image(id="imageInput",class="form-control-file") }}
+      </div>
+      <!-- Image Preview -->
+      <div>
+        <img
+          id="imagePreview"
+          src="#"
+          alt="Image Preview"
+          style="display: none; max-width: 100%; max-height: 200px"
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% with messages = get_flashed_messages() %} {% if messages %}
+    <div class="alert alert-danger">
+      <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %} {% endwith %}
+
+    <script>
+      // Get references to the input field and image tag
+      const imageInput = document.getElementById("imageInput");
+      const imagePreview = document.getElementById("imagePreview");
+
+      // Add an event listener to the file input
+      imageInput.addEventListener("change", function () {
+        // Check if a file is selected
+        if (imageInput.files && imageInput.files[0]) {
+          const reader = new FileReader();
+          console.log(reader);
+
+          // When the file is loaded, set the src attribute of the image tag
+          reader.onload = function (e) {
+            imagePreview.src = e.target.result;
+            imagePreview.style.display = "block"; // Show the image preview
+          };
+
+          // Read the selected file as a data URL
+          reader.readAsDataURL(imageInput.files[0]);
+        } else {
+          // Clear the image preview if no file is selected
+          imagePreview.src = "#";
+          imagePreview.style.display = "none"; // Hide the image preview
+        }
+      });
+    </script>
+  </body>
+</html>

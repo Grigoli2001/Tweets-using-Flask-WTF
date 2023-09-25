@@ -1,13 +1,17 @@
-from flask import Blueprint, render_template,url_for, jsonify,g, request, redirect,session, flash
+import os
+from flask import Blueprint, render_template,url_for, jsonify,g, request, redirect, flash, current_app
 import sqlite3
-from flask_login import login_required,logout_user
-
+from flask_login import login_required,current_user,logout_user
+from .mongoDB import client
+import datetime
+from werkzeug.utils import secure_filename
+from .forms import TweetForm
 root = Blueprint('root',__name__)
 
 
 @root.route('/')
 def index():
-    return "Heyy"
+    return render_template('home.html')
 def conn_db():
     db = getattr(g,'_database',None)
     if db is None:
@@ -61,8 +65,72 @@ def authenticate_user(email, password):
 def profile():
     return render_template('profile.html')
 
+
+
 @root.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login_blueprint.login_logic'))
+
+# Using MongoDB for tweets
+db = client['tweets_db']
+collection = db['tweets']
+@root.route('/tweets')
+@login_required
+def tweets():
+    try:
+        tweets = list(collection.find())
+        for tweet in tweets:
+            tweet['_id'] = str(tweet['_id'])
+        # return jsonify(tweets)
+        return render_template('tweets.html', tweets=tweets)
+    except Exception:
+        return "Error"
+
+
+
+@root.route('/add_tweet', methods=[ 'GET','POST'])
+@login_required
+def addTweet():
+    form = TweetForm()  # Create an instance of the TweetForm
+    if form.validate_on_submit():        
+        
+        
+        user_id = current_user.id
+        content = form.content.data
+        # Get the current timestamp
+        today_date = datetime.date.today()
+        created_at = today_date.strftime("%d %b %Y")
+
+        image = form.image.data  # Get the uploaded image
+        if not content and not image:
+            flash('Please provide either content or an image.', 'danger')
+            return render_template('add_tweet.html', form=form)
+        # Check if an image was uploaded
+        if image:
+            image_filename = secure_filename(image.filename)
+            image_path = os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename)
+            image.save(image_path)
+            
+            # Save the image path in the database
+            image_db_path = os.path.join('static', 'uploads', image_filename)  # Relative path for HTML
+        else:
+            image_db_path = None  # Handle the case where no image was uploaded
+
+        tweet = {
+            'content': content,
+            'created_at': created_at,
+            'updated_at': None,
+            'user_id': user_id,
+            'image_path': image_db_path  # Save the image path in the database
+        }
+
+        result = collection.insert_one(tweet)
+
+        return redirect(url_for('root.tweets'))
+
+    return render_template('add_tweet.html',form = form)    
+
+
+
