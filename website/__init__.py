@@ -1,9 +1,19 @@
 from flask import Flask
-
+from flask_login import LoginManager
+login_manager = LoginManager()
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'qwerty'
 
+    # Initialize the LoginManager
+    login_manager.login_view = 'login_blueprint.login_logic'  # Set the login view
+    login_manager.init_app(app)
+
+# Register Blueprints
     from .root import root
+    from .register import register
+    from .login import login_blueprint
     app.register_blueprint(root,url_prefix='/')
+    app.register_blueprint(register,url_prefix='/register')
+    app.register_blueprint(login_blueprint,url_prefix='/login')
     return app
