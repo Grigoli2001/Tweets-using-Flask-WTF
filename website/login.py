@@ -2,6 +2,7 @@ from flask import Blueprint, render_template,url_for,session,redirect, request, 
 from flask_login import  UserMixin, login_user,login_required,logout_user,current_user
 from .root import conn_db
 from . import login_manager
+from .forms import LoginForm
 login_blueprint = Blueprint('login_blueprint',__name__)
 
 
@@ -42,11 +43,12 @@ def load_user(user_id):
 
 @login_blueprint.route('/',methods = ['GET','POST'])
 def login_logic():
+    form = LoginForm()
     if current_user.is_authenticated:
-         return redirect(url_for('root.tweets'))
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
+         return redirect(url_for('root.feed'))
+    if form.validate_on_submit():
+        email = form.email.data
+        password = form.password.data
         db = conn_db()
         cursor = db.cursor()
         cursor.execute('SELECT * FROM users WHERE email = ?',(email,))
@@ -55,9 +57,9 @@ def login_logic():
             Us = load_user(user[0])
             if email == Us.email and password == Us.password:
                 login_user(Us)
-                return redirect(url_for('root.tweets'))
+                return redirect(url_for('root.feed'))
             else:
                 flash('Login Failed check your username and password','danger')
-    return render_template('login.html')
+    return render_template('login.html', form = form)
  
 

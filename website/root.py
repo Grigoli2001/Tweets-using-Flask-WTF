@@ -71,20 +71,20 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('login_blueprint.login_logic'))
+    return redirect(url_for('root.index'))
 
 # Using MongoDB for tweets
 db = client['tweets_db']
 collection = db['tweets']
-@root.route('/tweets')
+@root.route('/feed')
 @login_required
-def tweets():
+def feed():
     try:
         tweets = list(collection.find())
         for tweet in tweets:
             tweet['_id'] = str(tweet['_id'])
         # return jsonify(tweets)
-        return render_template('tweets.html', tweets=tweets)
+        return render_template('feed.html', tweets=tweets)
     except Exception:
         return "Error"
 
@@ -128,7 +128,7 @@ def addTweet():
 
         result = collection.insert_one(tweet)
 
-        return redirect(url_for('root.tweets'))
+        return redirect(url_for('root.feed'))
 
     return render_template('add_tweet.html',form = form)    
 

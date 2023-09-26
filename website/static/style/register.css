@@ -6,6 +6,7 @@ body {
   display: flex;
   height: 100vh;
   align-items: center;
+  pointer-events: none;
 }
 .leftside {
   flex: 1;
@@ -64,10 +65,62 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+  background-color: rgb(1, 1, 1);
+  width: 600px;
+  height: 80%;
+  border-radius: 10px;
 }
-
+.register-wrapper {
+  height: 100%;
+}
+.register-wrapper > h2 {
+  color: white;
+  margin-left: 20px;
+}
+#closeNewNote {
+  background-color: black;
+  color: white;
+  font-size: x-large;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+}
+#closeNewNote:hover {
+  background-color: rgb(46, 46, 46);
+}
 .register-wrapper > form {
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+.register-wrapper > form > label {
+  color: white;
+  margin: 10px 0px 10px 20px;
+}
+.reg-inp {
+  padding: 0;
+  margin-left: 20px;
+  margin-right: 20px;
+  height: 40px;
+  background-color: black;
+  border: 2px solid gray;
+  border-radius: 5px;
+  color: white;
+  font-size: x-large;
+  padding-left: 5px;
+}
+.reg-inp:focus {
+  border: 2px solid blue;
+  outline: none;
+}
+span {
+  color: white;
+  margin-left: 20px;
+}
+.reg-submit {
+  margin-top: 5%;
+  height: 40px;
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 20px;
 }

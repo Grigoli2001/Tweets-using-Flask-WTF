@@ -1,0 +1,98 @@
+body {
+  background-color: rgb(11, 11, 11);
+  margin: 0;
+}
+.container {
+  display: flex;
+}
+.sidebar {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+.log-but {
+  background: none;
+  border: none;
+  text-align: -webkit-center;
+  height: 70px;
+  width: 70px;
+  border-radius: 200px;
+  cursor: pointer;
+  align-content: center;
+  align-self: center;
+  margin-bottom: 30px;
+}
+.sidebar-btn {
+  font-family: cursive;
+  width: 70%;
+  align-self: center;
+  text-align: center;
+  height: 50px;
+  background: none;
+  border-radius: 20px;
+  cursor: pointer;
+  color: white;
+  font-size: larger;
+  border: 0;
+}
+.sidebar-btn > i {
+  font-size: larger;
+  margin-right: 10px;
+}
+.sidebar-btn:hover {
+  background: #333333;
+}
+.sidebar-post-btn {
+  width: 30%;
+  align-self: center;
+  text-align: center;
+  height: 50px;
+  border-radius: 20px;
+  background: none;
+  cursor: pointer;
+  color: white;
+  font-family: cursive;
+  font-size: x-large;
+  border: 0;
+  /* margin-top: auto;
+    margin-bottom: 20px; */
+}
+
+.log-but:hover {
+  background: #383838;
+}
+.logo {
+  align-self: center;
+  width: 50px;
+  height: 50px;
+  border: 2px solid white;
+  border-radius: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: cursive;
+}
+.logo > h2 {
+  color: white;
+  text-align: center;
+  font-size: 10pt;
+  margin: 0;
+}
+.logo > p {
+  color: white;
+  text-align: center;
+  font-size: 3pt;
+  margin: 0;
+}
+.tweets-wrapper {
+  flex: 3;
+  width: 100%;
+  outline: red dotted;
+}
+.right-sidebar {
+  flex: 2;
+}

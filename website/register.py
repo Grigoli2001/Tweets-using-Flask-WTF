@@ -24,7 +24,7 @@ def add_user_form():
                 return redirect(url_for('root.tweets'))
         except Exception as e:
             return str(e), 500
-    return render_template('register.html',form = form)
+    return render_template('register.html',reg_form = form)
 
 
 
