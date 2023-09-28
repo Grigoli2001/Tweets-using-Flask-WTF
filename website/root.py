@@ -111,6 +111,29 @@ def feed():
     except Exception as e:
         return str(e)
 
+@root.route("/my_posts")
+@login_required
+def my_posts():
+    post_form = PostForm()
+    try:
+        tweets = list(collection.find({'user_id': current_user.id}))
+        for tweet in tweets:
+            tweet['_id'] = str(tweet['_id'])
+            user_info = get_user_info_by_id(tweet['user_id'])
+            if user_info:
+                tweet['author_name'] = user_info[1] # Access username using integer index
+                tweet['author_profile_pic'] = user_info[4] # Access profile_pic_path using integer index
+                tweet['author_fullname'] = user_info[5]
+            else:
+                # Handle the case where the author was not found
+                tweet['author_fullname'] = "Unknown"
+                tweet['author_name'] = 'Unknown'
+                tweet['author_profile_pic'] = None
+        tweets.reverse()
+        return render_template('my_posts.html', tweets=tweets, current_user = current_user, post_form = post_form)
+    except Exception as e:
+        return str(e)
+    
 
 
 @root.route('/add_tweet', methods=[ 'GET','POST'])

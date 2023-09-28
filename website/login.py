@@ -51,7 +51,7 @@ def login_logic(auth_email = None,auth_password = None):
     if current_user.is_authenticated:
          return redirect(url_for('root.feed'))
     if form.validate_on_submit():
-        email = form.email.data
+        email = form.email.data.lower()
         password = form.password.data
         db = conn_db()
         cursor = db.cursor()

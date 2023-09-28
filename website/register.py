@@ -12,7 +12,7 @@ def add_user_form():
     form = RegistrationForm()
     if form.validate_on_submit():
         username = form.username.data
-        email = form.email.data
+        email = form.email.data.lower()
         password = form.password.data
         profile_pic = form.profile_pic.data
         fullname = form.fullname.data

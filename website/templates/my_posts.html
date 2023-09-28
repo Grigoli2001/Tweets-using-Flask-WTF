@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
       rel="stylesheet"
-      href="{{url_for('static', filename = 'style/feed.css')}}"
+      href="{{url_for('static', filename = 'style/myposts.css')}}"
     />
     <link
       rel="stylesheet"
@@ -31,6 +31,7 @@
         <button class="sidebar-btn">
           <i class="fa-regular fa-pen-to-square"></i>POST
         </button>
+
         <button class="sidebar-btn profile">
           {%if current_user.profile_pic%}
           <img src="{{current_user.profile_pic}}" alt="" />
@@ -46,6 +47,9 @@
           </div>
           <i class="fa-solid fa-ellipsis dots"></i>
         </button>
+        <div class="sidebar-menu" id="sidebarMenu">
+          <button onclick="location.assign('/logout')">logout</button>
+        </div>
       </div>
 
       <div class="tweets-wrapper">
@@ -55,14 +59,14 @@
             <button
               onclick="location.assign('/feed')"
               id="forYouBtn"
-              class="foryou-btn selected"
+              class="foryou-btn"
             >
               <span>For You</span>
             </button>
             <button
               onclick="location.assign('/my_posts')"
               id="yourPostsBtn"
-              class="yourposts-btn"
+              class="yourposts-btn selected"
             >
               <span>Your Posts</span>
             </button>
@@ -133,7 +137,18 @@
                 >
               </div>
               <div class="tweet-header-right">
-                <button type="button"><i class="fas fa-ellipsis-h"></i></button>
+                <button
+                  type="button"
+                  class="toggle-menu"
+                  data-toggle="menu-{{ loop.index }}"
+                >
+                  <i class="fas fa-ellipsis-h"></i>
+                </button>
+              </div>
+              <div class="tweet-menu" id="menu-{{ loop.index }}">
+                <!-- Add your edit and delete options here -->
+                <button><i class="fa-solid fa-pen"></i>Edit</button>
+                <button><i class="fa-solid fa-trash"></i>Delete</button>
               </div>
             </div>
             <p>{{tweet.content}}</p>
@@ -227,6 +242,38 @@
             const daysAgo = Math.floor(secondsAgo / 86400);
             postTime.textContent = daysAgo + "d ago";
           }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleButtons = document.querySelectorAll(".toggle-menu");
+        const menus = document.querySelectorAll(".tweet-menu");
+
+        toggleButtons.forEach((button, index) => {
+          button.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent the click event from reaching the document
+            const menu = menus[index];
+
+            if (menu.style.display === "block") {
+              menu.style.display = "none";
+            } else {
+              menu.style.display = "block";
+            }
+          });
+        });
+
+        // Add a click event listener to the document body
+        document.body.addEventListener("click", function () {
+          menus.forEach((menu) => {
+            menu.style.display = "none"; // Hide all menus
+          });
+        });
+
+        // Prevent clicks inside the menu from closing it
+        menus.forEach((menu) => {
+          menu.addEventListener("click", function (e) {
+            e.stopPropagation(); // Prevent the click event from reaching the document
+          });
         });
       });
     </script>
