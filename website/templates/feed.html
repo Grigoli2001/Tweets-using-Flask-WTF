@@ -31,18 +31,196 @@
         <button class="sidebar-btn">
           <i class="fa-regular fa-pen-to-square"></i>POST
         </button>
+        <button class="sidebar-btn profile">
+          {%if current_user.profile_pic%}
+          <img src="{{current_user.profile_pic}}" alt="" />
+          {%else %}
+          <img
+            src="../static/assets/prof_img_placeholder.jpg"
+            alt="website\static\assets\prof_img_placeholder.jpg"
+          />
+          {%endif%}
+          <div class="email_username">
+            <p>{{current_user.email}}</p>
+            <p>@{{current_user.username}}</p>
+          </div>
+          <i class="fa-solid fa-ellipsis dots"></i>
+        </button>
       </div>
+
       <div class="tweets-wrapper">
+        <div class="header">
+          <p>HOME</p>
+          <div class="header-down">
+            <button id="forYouBtn" class="foryou-btn selected">
+              <span>For You</span>
+            </button>
+            <button id="yourPostsBtn" class="yourposts-btn">
+              <span>Your Posts</span>
+            </button>
+          </div>
+        </div>
+        <div class="post-wrapper">
+          <div class="profile-pic">
+            {% if current_user.profile_pic %}
+            <img src="{{current_user.profile_pic}}" alt="" />
+            {% else %}
+            <img src="../static/assets/prof_img_placeholder.jpg" alt="" />
+            {% endif %}
+          </div>
+          <div class="post-input-wrapper">
+            <form
+              action="/add_tweet"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <div class="post">
+                {{post_form.hidden_tag()}} {{post_form.content(class =
+                "post_input", placeholder = "What's Up?", id = "autoTextarea"
+                )}}
+                <div
+                  id="imagePreviewContainer"
+                  style="display: none; text-align: center"
+                >
+                  <img
+                    id="imagePreview"
+                    src=""
+                    alt="Image Preview"
+                    style="max-width: 100%; max-height: 200px"
+                  />
+                </div>
+              </div>
+              <div class="attach-post-btns">
+                <div class="left-btns">
+                  {{post_form.media(id = "media")}}
+                  <label for="media" title="Media"
+                    ><i class="fa-solid fa-photo-film"></i
+                  ></label>
+                </div>
+                {{post_form.submit(class='post-submit', disabled = true, id=
+                "postSubmit")}}
+              </div>
+            </form>
+          </div>
+        </div>
         {%for tweet in tweets%}
         <div class="tweet-card">
-          <p>{{tweet.content}}</p>
-          {%if tweet.image_path%}
-          <img src="{{tweet.image_path}}" alt="" width="400px" />
-          {%endif %}
+          <div class="author-pic">
+            <div class="profile-pic">
+              {% if tweet.author_profile_pic %}
+              <img src="{{tweet.author_profile_pic}}" alt="" />
+              {% else %}
+              <img src="../static/assets/prof_img_placeholder.jpg" alt="" />
+              {% endif %}
+            </div>
+          </div>
+          <div class="main-content">
+            <div class="tweet-header">
+              <a href="">{{tweet.author_fullname}}</a>
+              <span>@{{tweet.author_name}}</span>
+              <span class="post-time"></span>
+              <span id="createdAt" style="display: none"
+                >{{tweet.created_at}}</span
+              >
+            </div>
+            <p>{{tweet.content}}</p>
+            {%if tweet.image_path%}
+            <img class="content-img" src="{{tweet.image_path}}" alt="" />
+            {%endif %}
+          </div>
         </div>
         {%endfor %}
       </div>
       <div class="right-sidebar"></div>
     </div>
+
+    <script>
+      const forYouBtn = document.getElementById("forYouBtn");
+      const yourPostsBtn = document.getElementById("yourPostsBtn");
+      forYouBtn.addEventListener("click", () => {
+        if (!forYouBtn.classList.contains("selected")) {
+          forYouBtn.classList.add("selected");
+          yourPostsBtn.classList.remove("selected");
+        }
+      });
+      yourPostsBtn.addEventListener("click", () => {
+        if (!yourPostsBtn.classList.contains("selected")) {
+          yourPostsBtn.classList.add("selected");
+          forYouBtn.classList.remove("selected");
+        }
+      });
+      const textarea = document.getElementById("autoTextarea");
+
+      textarea.addEventListener("input", function () {
+        this.style.height = "auto"; // Reset the height to auto to calculate the new height
+        this.style.height = this.scrollHeight + "px"; // Set the new height based on the content
+        if (this.value.length > 2) {
+          document.getElementById("postSubmit").disabled = false;
+        } else {
+          document.getElementById("postSubmit").disabled = true;
+        }
+      });
+
+      const imageInput = document.getElementById("media");
+      const imagePreviewContainer = document.getElementById(
+        "imagePreviewContainer"
+      );
+      const imagePreview = document.getElementById("imagePreview");
+      imageInput.addEventListener("change", function () {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            // Display the image preview
+            imagePreview.src = e.target.result;
+            imagePreviewContainer.style.display = "block";
+
+            // Set the cursor position to the beginning of the textarea
+            textarea.selectionStart = 0;
+            textarea.selectionEnd = 0;
+          };
+
+          // Read the selected file as a data URL
+          reader.readAsDataURL(this.files[0]);
+          document.getElementById("postSubmit").disabled = false;
+        } else {
+          // Clear the image preview if no file is selected
+          imagePreview.src = "";
+          imagePreviewContainer.style.display = "none";
+        }
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const tweetCards = document.querySelectorAll(".tweet-card");
+
+        tweetCards.forEach(function (tweetCard) {
+          const postTime = tweetCard.querySelector(".post-time");
+          const createdAtSpan = tweetCard.querySelector("#createdAt");
+
+          // Get the ISO date from the createdAtSpan
+          const createdAtISO = createdAtSpan.textContent;
+
+          // Parse the ISO 8601 timestamp
+          const tweetCreatedAt = new Date(createdAtISO);
+
+          // Calculate the time difference in seconds
+          const now = new Date();
+          const secondsAgo = Math.floor((now - tweetCreatedAt) / 1000);
+
+          // Format the timestamp as "X seconds/minutes/hours/days ago"
+          if (secondsAgo < 60) {
+            postTime.textContent = secondsAgo + "s ago";
+          } else if (secondsAgo < 3600) {
+            const minutesAgo = Math.floor(secondsAgo / 60);
+            postTime.textContent = minutesAgo + "m ago";
+          } else if (secondsAgo < 86400) {
+            const hoursAgo = Math.floor(secondsAgo / 3600);
+            postTime.textContent = hoursAgo + "h ago";
+          } else {
+            const daysAgo = Math.floor(secondsAgo / 86400);
+            postTime.textContent = daysAgo + "d ago";
+          }
+        });
+      });
+    </script>
   </body>
 </html>

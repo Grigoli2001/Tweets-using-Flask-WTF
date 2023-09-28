@@ -1,7 +1,10 @@
-from flask import Blueprint, render_template,url_for,session,redirect
+from flask import Blueprint, render_template,url_for,session,redirect, current_app
+import os
 import sqlite3
-from .root import conn_db, authenticate_user
+from .root import conn_db
 from .forms import RegistrationForm
+from werkzeug.utils import secure_filename
+from .login import login_logic
 register = Blueprint('register',__name__)
 
 @register.route('/', methods = ['GET','POST'])
@@ -11,19 +14,27 @@ def add_user_form():
         username = form.username.data
         email = form.email.data
         password = form.password.data
+        profile_pic = form.profile_pic.data
+        fullname = form.fullname.data
+        if profile_pic:
+            profile_pic_filename = secure_filename(profile_pic.filename)
+            profile_pic_path = os.path.join(current_app.config['UPLOAD_FOLDER'], profile_pic_filename)
+            profile_pic.save(profile_pic_path)
+            
+            # Save the image path in the database
+            profile_pic_db_path = os.path.join('static', 'uploads', profile_pic_filename)  # Relative path for HTML
+        else:
+            profile_pic_db_path = None  # Handle the case where no image was uploaded
         try:
             db = conn_db()
             cursor = db.cursor()
-            cursor.execute('INSERT INTO users (username, email, password) VALUES (?, ?, ?)', (username, email, password))
+            cursor.execute('INSERT INTO users (username, email, password,profile_pic_path,fullname) VALUES (?, ?, ?,?,?)', (username, email, password,profile_pic_db_path,fullname))
             db.commit()
-            user = authenticate_user(email, password)
+            user = login_logic(email, password)
             if user:
-                # Store user data in the session
-                session['user_id'] = user[0]
-                session['user_username'] = user[1]
-                return redirect(url_for('root.tweets'))
+                return redirect(url_for('root.feed'))
         except Exception as e:
-            return str(e), 500
+            return render_template('register.html',reg_form = form, error = str(e))
     return render_template('register.html',reg_form = form)
 
 

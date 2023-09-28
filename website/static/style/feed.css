@@ -6,7 +6,7 @@ body {
   display: flex;
 }
 .sidebar {
-  flex: 2;
+  flex: 3;
   display: flex;
   flex-direction: column;
   position: sticky;
@@ -61,9 +61,6 @@ body {
     margin-bottom: 20px; */
 }
 
-.log-but:hover {
-  background: #383838;
-}
 .logo {
   align-self: center;
   width: 50px;
@@ -75,6 +72,9 @@ body {
   align-items: center;
   justify-content: center;
   font-family: cursive;
+}
+.logo:hover {
+  background: #383838;
 }
 .logo > h2 {
   color: white;
@@ -89,10 +89,199 @@ body {
   margin: 0;
 }
 .tweets-wrapper {
-  flex: 3;
+  flex: 4;
   width: 100%;
-  outline: red dotted;
+  border-left: 1px solid rgb(102, 102, 102);
+  border-right: 1px solid rgb(102, 102, 102);
 }
 .right-sidebar {
-  flex: 2;
+  flex: 4;
+}
+.profile {
+  margin-top: auto;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+.profile > img {
+  width: 50px;
+  height: 48px;
+  border-radius: 50px;
+  margin-left: 20px;
+}
+
+.email_username {
+  display: flex;
+  flex-direction: column;
+}
+.email_username > p {
+  margin: 0;
+  margin-left: 10px;
+  text-align: center;
+  align-self: center;
+}
+.email_username > p:last-child {
+  font-size: 8pt;
+  margin: 0;
+  padding: 0;
+  color: #727272;
+}
+.dots {
+  align-self: center;
+}
+
+/* Main Content */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid rgb(102, 102, 102);
+  position: sticky;
+  top: 0;
+  background-color: rgba(11, 11, 11, 0.9);
+}
+.header > p {
+  padding-left: 20px;
+  font-family: cursive;
+  color: white;
+  margin: 0;
+  margin-top: 10px;
+}
+.header-down {
+  display: flex;
+}
+.foryou-btn,
+.yourposts-btn {
+  font-family: cursive;
+  flex: 1;
+  background: 0;
+  border: none;
+  color: rgb(189, 189, 189);
+  height: 60px;
+  cursor: pointer;
+}
+.selected {
+  color: white;
+  font-size: large;
+  font-weight: 800;
+}
+.selected > span {
+  border-bottom: 5px solid blue;
+  padding-bottom: 11px;
+}
+.foryou-btn:hover,
+.yourposts-btn:hover {
+  background: #383838;
+}
+
+.post-wrapper {
+  display: flex;
+}
+.profile-pic {
+  margin-right: 10px;
+}
+.profile-pic > img {
+  margin-top: 10px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  margin-left: 20px;
+}
+.post-input-wrapper {
+  margin-top: 10px;
+  width: 100%;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+.post-input-wrapper > form {
+  width: 100%;
+}
+.post {
+  width: 100%;
+}
+.post > textarea {
+  resize: none;
+  width: 100%;
+  margin: 0;
+  padding: 5px 5px 5px 5px;
+  height: 80px;
+  background-color: inherit;
+  border: none;
+  font-size: xx-large;
+  color: #a0a0a0;
+  border-bottom: 1px solid rgb(102, 102, 102);
+  font-family: cursive;
+}
+.post > textarea:focus {
+  outline: none;
+  border: none;
+  border-bottom: 1px solid rgb(102, 102, 102);
+}
+.attach-post-btns {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-top: 10px;
+}
+.left-btns > input[type="file"] {
+  display: none !important;
+}
+.left-btns > label > i {
+  color: rgb(53, 141, 255);
+  cursor: pointer;
+}
+.post-submit {
+  height: 35px;
+  border: none;
+  border-radius: 10px;
+  width: 80px;
+  background-color: rgb(53, 141, 255);
+  color: white;
+  font-family: cursive;
+  font-weight: 700;
+  cursor: pointer;
+}
+.post-submit:hover {
+  background: #29aaff;
+}
+.post-submit:disabled {
+  height: 35px;
+  cursor: default;
+  border: none;
+  border-radius: 10px;
+  width: 80px;
+  background-color: rgb(22, 46, 77);
+  color: white;
+  font-family: cursive;
+  font-weight: 700;
+}
+.tweet-card {
+  display: flex;
+  border-top: 1px solid rgb(102, 102, 102);
+  border-bottom: 1px solid rgb(102, 102, 102);
+}
+.main-content {
+  width: 100%;
+}
+.tweet-header {
+  margin-top: 10px;
+}
+.tweet-header > a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+.tweet-header > span {
+  color: rgb(114, 114, 114);
+}
+.main-content > p {
+  color: white;
+  overflow-wrap: break-word;
+  max-width: 560px;
+}
+.content-img {
+  min-width: 400px;
+  max-width: 550px;
+  border-radius: 10px;
 }

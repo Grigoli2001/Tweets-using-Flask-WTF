@@ -3,9 +3,10 @@ from flask import Blueprint, render_template,url_for, jsonify,g, request, redire
 import sqlite3
 from flask_login import login_required,current_user,logout_user
 from .mongoDB import client
-import datetime
+from datetime import datetime
 from werkzeug.utils import secure_filename
-from .forms import TweetForm
+from .forms import TweetForm, PostForm
+# from .login import User
 root = Blueprint('root',__name__)
 
 
@@ -33,7 +34,9 @@ def create_user_table(db):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
-            password text NOT NULL
+            password text NOT NULL,
+            profile_pic_path text,
+            fullname text
         )
     ''')
     db.commit()
@@ -49,6 +52,13 @@ def show_users():
     # Pass the user data to the template
     return jsonify(users)
 
+    
+@root.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
+
+
 def authenticate_user(email, password):
     conn = conn_db()
     cursor = conn.cursor()
@@ -59,13 +69,6 @@ def authenticate_user(email, password):
         return user
     else:
         return None
-    
-@root.route('/profile')
-@login_required
-def profile():
-    return render_template('profile.html')
-
-
 
 @root.route('/logout')
 @login_required
@@ -73,40 +76,59 @@ def logout():
     logout_user()
     return redirect(url_for('root.index'))
 
+def get_user_info_by_id(user_id):
+    conn = conn_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE id=?", (user_id,))
+    user = cursor.fetchone()
+    if user:   
+        return user
+    return None
 # Using MongoDB for tweets
 db = client['tweets_db']
 collection = db['tweets']
 @root.route('/feed')
 @login_required
 def feed():
+    post_form = PostForm()
     try:
         tweets = list(collection.find())
         for tweet in tweets:
             tweet['_id'] = str(tweet['_id'])
+            user_info = get_user_info_by_id(tweet['user_id'])
+            if user_info:
+                tweet['author_name'] = user_info[1]  # Access username using integer index
+                tweet['author_profile_pic'] = user_info[4]  # Access profile_pic_path using integer index
+                tweet['author_fullname'] = user_info[5]
+            else:
+                # Handle the case where the author was not found
+                tweet['author_fullname'] = "Unknown"
+                tweet['author_name'] = 'Unknown'
+                tweet['author_profile_pic'] = None
+        tweets.reverse()
         # return jsonify(tweets)
-        return render_template('feed.html', tweets=tweets)
-    except Exception:
-        return "Error"
+        return render_template('feed.html', tweets=tweets, current_user = current_user, post_form = post_form)
+    except Exception as e:
+        return str(e)
 
 
 
 @root.route('/add_tweet', methods=[ 'GET','POST'])
 @login_required
 def addTweet():
-    form = TweetForm()  # Create an instance of the TweetForm
+    form = PostForm()  # Create an instance of the TweetForm
     if form.validate_on_submit():        
         
         
         user_id = current_user.id
         content = form.content.data
         # Get the current timestamp
-        today_date = datetime.date.today()
-        created_at = today_date.strftime("%d %b %Y")
+        created_at = datetime.now().isoformat()
 
-        image = form.image.data  # Get the uploaded image
+        image = form.media.data  # Get the uploaded image
         if not content and not image:
             flash('Please provide either content or an image.', 'danger')
-            return render_template('add_tweet.html', form=form)
+            return redirect(url_for('root.feed'))
         # Check if an image was uploaded
         if image:
             image_filename = secure_filename(image.filename)

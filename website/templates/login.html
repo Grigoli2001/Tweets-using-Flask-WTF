@@ -55,7 +55,14 @@
           {{ form.password(class="reg-inp", placeholder="********") }} {% for
           error in form.password.errors %}
           <span>{{ error }}</span>
-          {% endfor %} {{form.submit(class='reg-submit')}}
+          {% endfor %} {% with messages = get_flashed_messages() %} {% if
+          messages %}
+          <div class="flash-messages">
+            {% for message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% endfor %}
+          </div>
+          {% endif %} {% endwith %} {{form.submit(class='reg-submit')}}
         </form>
       </div>
     </div>
