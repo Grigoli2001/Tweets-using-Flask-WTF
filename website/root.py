@@ -6,6 +6,8 @@ from .mongoDB import client
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from .forms import TweetForm, PostForm
+from bson import ObjectId
+
 # from .login import User
 root = Blueprint('root',__name__)
 
@@ -179,3 +181,15 @@ def addTweet():
 
 
 
+@root.route('/delete_tweet', methods = ['post'] )
+@login_required
+def delete_tweet():
+    if request.method == 'POST':
+        _id = request.form['tweet_id']
+        try:
+            object_id = ObjectId(_id)
+        except Exception as e:
+            print(f"Invalid ObjectId: {e}")
+        collection.delete_one({'_id' : object_id})
+        return redirect(url_for('root.my_posts'))
+    return redirect('/my_posts')

@@ -3,21 +3,167 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename = 'style/register.css')}}"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <title>Document</title>
   </head>
+
   <body>
     <div class="container">
-      <div class="tweets-wrapper">
-        {%for tweet in tweets%}
-        <div class="tweet-card">
-          <h2>{{tweet.title}}</h2>
-          <p>{{tweet.content}}</p>
-          {%if tweet.image_path%}
-          <img src="{{tweet.image_path}}" alt="" width="400px" />
-          {%endif %}
+      <div class="leftside">
+        <div class="logo">
+          <div class="left-cont-wrapper">
+            <h2>GE</h2>
+            <p>Wanna Have Fun?</p>
+          </div>
         </div>
-        {%endfor %}
+      </div>
+      <div class="rightside">
+        <div class="right-cont-wrapper">
+          <h1>Relax! Enjoy Life!</h1>
+          <h3>Join today</h3>
+          <button>Sign Up with Google</button>
+          <button>Sign Up with Facebook</button>
+          <button onclick="location.assign('/register')">Create account</button>
+
+          <p>Already have an account?</p>
+          <button onclick="location.assign('/login')">Sign in</button>
+        </div>
       </div>
     </div>
+    <div class="registration-card">
+      <button onclick="location.assign('/')" id="closeNewNote">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="register-wrapper">
+        <h2>Create your account</h2>
+        <form method="post" enctype="multipart/form-data">
+          {{reg_form.hidden_tag()}}
+          <div class="profile-pic-wrapper">
+            <div class="pic-holder">
+              <!-- uploaded pic shown here -->
+              <img
+                id="profilePic"
+                class="pic"
+                src="../static/assets/prof_img_placeholder.jpg"
+              />
+              {{reg_form.profile_pic(class = "uploadProfileInput", id =
+              "newProfilePhoto",accept="image/*",style="opacity: 0")}}
+              <label for="newProfilePhoto" class="upload-file-block">
+                <div class="text-center">
+                  <div class="mb-2">
+                    <i class="fa fa-camera fa-2x"></i>
+                  </div>
+                  <div class="text-uppercase">
+                    Update <br />
+                    Profile Photo
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+          {{reg_form.username.label}} {{reg_form.username(class = "reg-inp",
+          placeholder = 'Username')}} {%for error in reg_form.username.errors %}
+          <span>{{error}}</span>
+          {%endfor%} {{reg_form.email.label}} {{reg_form.email(class =
+          "reg-inp", placeholder = "Email@gmail.com")}} {%for error in
+          reg_form.email.errors %}
+          <span>{{error}}</span>
+          {%endfor%}{{reg_form.fullname.label}} {{reg_form.fullname(class =
+          "reg-inp", placeholder = "John Doe")}} {%for error in
+          reg_form.fullname.errors %}
+          <span>{{error}}</span>
+          {%endfor%} {{reg_form.password.label}} {{reg_form.password(class =
+          "reg-inp" ,placeholder = "********")}} {%for error in
+          reg_form.password.errors %}
+          <span>{{error}}</span>
+          {%endfor%} {{reg_form.confirm_password.label}}
+          {{reg_form.confirm_password(class = "reg-inp",placeholder =
+          "********")}} {%for error in reg_form.confirm_password.errors %}
+          <span>{{error}}</span>
+          {%endfor%} {%if error %}
+          <span
+            >Account already exists with this email try logging in:
+            <a href="/login">login</a> {{error}}</span
+          >
+          {%endif%} {{reg_form.submit(class='reg-submit')}}
+        </form>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("change", function (event) {
+        if (event.target.classList.contains("uploadProfileInput")) {
+          var triggerInput = event.target;
+          var holder = triggerInput.closest(".pic-holder");
+          var wrapper = triggerInput.closest(".profile-pic-wrapper");
+
+          var files = triggerInput.files || [];
+          if (!files.length || !window.FileReader) {
+            return;
+          }
+          var fileSize = files[0].size; // File size in bytes
+          var maxSize = 2 * 1024 * 1024; // 2MB limit (in bytes)
+          console.log(fileSize);
+          if (fileSize > maxSize) {
+            // File size is greater than 2MB, display an error message
+            // Display a success message for a short duration
+            var successMessage = document.createElement("div");
+            successMessage.className = "snackbar show";
+            successMessage.innerHTML =
+              '<i class="fa fa-check-circle text-success"></i> Size should be less than 2mb';
+            wrapper.appendChild(successMessage);
+
+            // Remove the success message after a delay
+            setTimeout(function () {
+              wrapper.removeChild(successMessage);
+            }, 3000);
+            triggerInput.value = ""; // Clear the file input
+            return;
+          }
+
+          if (/^image/.test(files[0].type)) {
+            var reader = new FileReader();
+            reader.readAsDataURL(files[0]);
+
+            reader.onloadend = function () {
+              // Change the image source immediately
+              var imgElement = holder.querySelector(".pic");
+              imgElement.src = this.result;
+
+              // Display a success message for a short duration
+              var successMessage = document.createElement("div");
+              successMessage.className = "snackbar show";
+              successMessage.innerHTML =
+                '<i class="fa fa-check-circle text-success"></i> Profile image updated successfully';
+              wrapper.appendChild(successMessage);
+
+              // Remove the success message after a delay
+              setTimeout(function () {
+                wrapper.removeChild(successMessage);
+              }, 3000);
+            };
+          } else {
+            // Display an error message for a short duration
+            var errorMessage = document.createElement("div");
+            errorMessage.className =
+              "alert alert-danger d-inline-block p-2 small";
+            errorMessage.setAttribute("role", "alert");
+            errorMessage.textContent = "Please choose a valid image.";
+            wrapper.appendChild(errorMessage);
+
+            // Remove the error message after a delay
+            setTimeout(function () {
+              wrapper.removeChild(errorMessage);
+            }, 3000);
+          }
+        }
+      });
+    </script>
   </body>
 </html>

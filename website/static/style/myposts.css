@@ -291,6 +291,7 @@ body {
   min-width: 400px;
   max-width: 550px;
   border-radius: 10px;
+  margin-right: 20px;
 }
 .tweet-header-right {
   margin-right: 10px;
@@ -341,7 +342,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.tweet-menu button {
+.tweet-menu > form > button {
   display: flex;
   width: 100%;
   text-align: left;
@@ -355,11 +356,29 @@ body {
   justify-content: space-evenly;
 }
 
-.tweet-menu button:hover {
+.tweet-menu > form > button:hover {
+  background-color: #3b3b3b;
+}
+
+.tweet-menu > button {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  padding: 10px 15px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: white;
+  font-family: cursive;
+  font-size: larger;
+  justify-content: space-evenly;
+}
+
+.tweet-menu > button:hover {
   background-color: #3b3b3b;
 }
 .sidebar-menu {
-  /* display :none ; */
+  display: none;
   position: absolute;
   bottom: 70px;
   right: 40px;
@@ -383,5 +402,18 @@ body {
   justify-content: space-evenly;
 }
 .sidebar-menu > button:hover {
+  background-color: #3b3b3b;
+}
+#removeImageButton {
+  background: none;
+  background-color: #191919;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: 120px;
+  height: 30px;
+  font-family: cursive;
+}
+#removeImageButton:hover {
   background-color: #3b3b3b;
 }

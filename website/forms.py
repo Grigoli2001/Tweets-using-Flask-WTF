@@ -15,7 +15,6 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(),EqualTo('password')])
     submit = SubmitField('Sign Up')
 
-
 class TweetForm(FlaskForm):
     content = TextAreaField('Content', validators=[])
     image = FileField('Image')
@@ -29,3 +28,4 @@ class PostForm(FlaskForm):
     content = TextAreaField()
     media = FileField('Media')
     submit = SubmitField('POST')
+

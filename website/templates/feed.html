@@ -31,7 +31,7 @@
         <button class="sidebar-btn">
           <i class="fa-regular fa-pen-to-square"></i>POST
         </button>
-        <button class="sidebar-btn profile">
+        <button class="sidebar-btn profile" id="sidebarMenuBtn">
           {%if current_user.profile_pic%}
           <img src="{{current_user.profile_pic}}" alt="" />
           {%else %}
@@ -46,6 +46,9 @@
           </div>
           <i class="fa-solid fa-ellipsis dots"></i>
         </button>
+        <div class="sidebar-menu" id="sidebarMenu">
+          <button onclick="location.assign('/logout')">logout</button>
+        </div>
       </div>
 
       <div class="tweets-wrapper">
@@ -90,6 +93,9 @@
                   id="imagePreviewContainer"
                   style="display: none; text-align: center"
                 >
+                  <button id="removeImageButton" style="display: none">
+                    Remove Image
+                  </button>
                   <img
                     id="imagePreview"
                     src=""
@@ -228,6 +234,71 @@
             postTime.textContent = daysAgo + "d ago";
           }
         });
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+        const sidebarMenuBtn = document.getElementById("sidebarMenuBtn");
+        const sidebarMenu = document.getElementById("sidebarMenu");
+
+        sidebarMenuBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (sidebarMenu.style.display === "block") {
+            sidebarMenu.style.display = "none";
+          } else {
+            sidebarMenu.style.display = "block";
+          }
+        });
+
+        // Add a click event listener to the document body
+        document.body.addEventListener("click", function () {
+          sidebarMenu.style.display = "none";
+        });
+      });
+      const removeImageButton = document.getElementById("removeImageButton");
+      const postSubmitButton = document.getElementById("postSubmit");
+
+      // Add an event listener to the "Remove Image" button
+      removeImageButton.addEventListener("click", function (e) {
+        e.preventDefault();
+        // Clear the image preview
+        imagePreview.src = "";
+        imagePreviewContainer.style.display = "none";
+        // Reset the input field
+        imageInput.value = "";
+        // Hide the "Remove" button
+        removeImageButton.style.display = "none";
+        // Disable the "Post" button if the textarea is empty
+        if (textarea.value.length < 3) {
+          postSubmitButton.disabled = true;
+        }
+      });
+
+      // Update the image input change event listener
+      imageInput.addEventListener("change", function () {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            // Display the image preview
+            imagePreview.src = e.target.result;
+            imagePreviewContainer.style.display = "block";
+            // Show the "Remove" button
+            removeImageButton.style.display = "block";
+
+            // Set the cursor position to the beginning of the textarea
+            textarea.selectionStart = 0;
+            textarea.selectionEnd = 0;
+          };
+
+          // Read the selected file as a data URL
+          reader.readAsDataURL(this.files[0]);
+          postSubmitButton.disabled = false;
+        } else {
+          // Clear the image preview if no file is selected
+          imagePreview.src = "";
+          imagePreviewContainer.style.display = "none";
+          // Hide the "Remove" button
+          removeImageButton.style.display = "none";
+        }
       });
     </script>
   </body>
